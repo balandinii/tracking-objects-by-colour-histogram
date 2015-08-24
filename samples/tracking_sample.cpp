@@ -51,7 +51,8 @@ int main( int argc, const char** argv )
 
     // Open the video file
     cv::VideoCapture cap;
-    cap.open( video_name );
+	if(video_name=="camera"){cap.open(0);}
+	else{cap.open( video_name );}
 
     if( !cap.isOpened() )
     {
@@ -62,7 +63,7 @@ int main( int argc, const char** argv )
 
     // Get the first frame
     cv::Mat frame;
-    cap >> frame;
+    cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;
 
     // Initialize GTReader and PrecisionRecallEvaluator
     std::string argv3 = parser.get<std::string>("3");
@@ -88,6 +89,8 @@ int main( int argc, const char** argv )
         return 1;
     }
 
+
+	long sh=0;
     // Run tracking
     while (true)
     {
@@ -115,6 +118,8 @@ int main( int argc, const char** argv )
                               rect_color,
                               gt))
             break;
+		if(sh>1000) break;
+		sh++;
     }
 
     if (gt_reader.isOpen())
