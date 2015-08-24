@@ -58,7 +58,11 @@ long*** make_hist(cv::Mat mat, cv::Rect& h){
 																													auto k=mat.ptr(i,j);
 																													ans[k[0]/32][k[1]/32][k[2]/32]++;
 																													}
-											return ans;
+											/*long one=0,two=0,thr=0;
+											long*** ans=new long**;
+											ans[0]=new long*;
+											ans[0][0]=new long[3];
+											return ans;*/
 											}
 
 struct three{
