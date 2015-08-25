@@ -12,6 +12,9 @@ class Trackerproject : public Tracker
 
  private:
     cv::Rect position_;
+	double xxx;
+	double yyy;
+	//xxx и yyy - текущие положения верхнего левого угла трекингового окна
 };
 
 cv::Mat previous_frame;
@@ -20,6 +23,8 @@ bool Trackerproject::init( const cv::Mat& frame, const cv::Rect& initial_positio
 {
     position_ = initial_position;
 	previous_frame=frame;
+	xxx=position_.x;
+	yyy=position_.y;
 	return true;
 }
 
@@ -82,13 +87,15 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 								//std::cout<<ver[i]<<"\n";
 								}
 
-	double dl=sqrt(dx*dx+dy*dy);
-	if(dl>0.001){dx/=dl;dy/=dl;}
-	dx*=7.0;dy*=7.0;
+	//double dl=sqrt(dx*dx+dy*dy);
+	//if(dl>0.001){dx/=dl;dy/=dl;}
+	dx*=17.0;dy*=17.0;
 
-	position_.x+=dx;
-	position_.y+=dy;
-	std::cout<<dx<<"  "<<dy<<"\n";
+	xxx+=dx;
+	yyy+=dy;
+	position_.x=xxx;
+	position_.y=yyy;
+	std::cout<<xxx<<"  "<<yyy<<"\n";
 
     new_position = position_;
 	previous_frame=frame;
