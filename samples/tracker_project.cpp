@@ -105,9 +105,31 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 								//std::cout<<ver[i]<<"\n";
 								}
 
-	//double dl=sqrt(dx*dx+dy*dy);
-	//if(dl>0.001){dx/=dl;dy/=dl;}
-	dx*=17.0;dy*=17.0;dx*=3.0;dy*=3.0;
+	double dl=sqrt(dx*dx+dy*dy);
+	//std::cout<<dl<<"\n";
+	if(dl>0.000001){dx/=dl;dy/=dl;
+					double maxver=0;
+					long t=1;
+					for(;;){
+							 cv::Rect position1;position1=position_;
+										 cv::Mat hist1;
+										 position1.x+=(dx*double(t));
+										 position1.y+=(dy*double(t));
+										 cv::Mat for_hist(frame,position1);
+										 int histSize[3] = {8, 8, 8};
+										 float range[2] = {0, 256};
+										 const float * ranges[3] = {range, range, range};
+										 int channels[3] = {0, 1, 2};
+										 calcHist(&for_hist, 1, channels, cv::Mat(), hist1, 3, histSize, ranges);
+										 double ver1=compareHist(old_hist,hist1,CV_COMP_CORREL);
+										 if((ver1*sqrt(sqrt(sqrt(double(t)))))>(maxver*sqrt(sqrt(sqrt(double(t-1)))))){maxver=ver1;}else{break;}
+										 t++;
+										 //if(t>100){break;}
+										 //std::cout<<ver1<<"   ";
+					        }
+					dx*=t;dy*=t;
+					std::cout<<t<<"  "<<maxver<<"\n";
+					}
 
 	xxx+=dx;
 	yyy+=dy;
