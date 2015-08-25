@@ -1,5 +1,5 @@
 #include <tracker.hpp>
-
+#include <vector>
 #include <opencv2/opencv.hpp>
 
 class Trackerproject : public Tracker
@@ -25,73 +25,46 @@ bool Trackerproject::init( const cv::Mat& frame, const cv::Rect& initial_positio
 
 bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 {
-	//cv::Mat mask(frame.rows,frame.cols,CV_8UC1);
-	//for(int i=0;i<frame.rows;i++)for(int j=0;j<frame.cols;j++) mask.ptr(i,j)=0;
 	cv::Mat for_hist(previous_frame,position_);
-	 int histSize[3] = {8, 8, 8};
+	int histSize[3] = {8, 8, 8};
     float range[2] = {0, 256};
     const float * ranges[3] = {range, range, range};
     int channels[3] = {0, 1, 2};
-    cv::Mat hist;
-    calcHist(&for_hist, 1, channels, cv::Mat(), hist, 3, histSize, ranges);
+    cv::Mat old_hist;
+    calcHist(&for_hist, 1, channels, cv::Mat(), old_hist, 3, histSize, ranges);
 
-	cv::Rect position1;cv::Mat hist1;
-	cv::Rect position2;cv::Mat hist2;
-	cv::Rect position3;cv::Mat hist3;
-	cv::Rect position4;cv::Mat hist4;
-	position1=position_;position1.x+=10;
-		position2=position_;position2.x-=10;
-			position3=position_;position3.y+=10;
-				position4=position_;position4.y-=10;
-	{
-			cv::Mat for_hist(previous_frame,position1);
+	std::vector<long> possible_dy;
+	std::vector<long> possible_dx;
+	std::vector<double> ver;ver.push_back(0);ver.push_back(0);ver.push_back(0);ver.push_back(0);
+
+	possible_dx.push_back(0);possible_dy.push_back(10);
+		possible_dx.push_back(10);possible_dy.push_back(0);
+			possible_dx.push_back(0);possible_dy.push_back(-10);
+		possible_dx.push_back(-10);possible_dy.push_back(0);
+		std::cout<<"4";
+	for(long i=0;i<possible_dx.size();i++){
+										 cv::Rect position1;cv::Mat hist1;position1=position_;
+										 position1.x+=possible_dx[i];position1.y+=possible_dy[i];
+										 cv::Mat for_hist(previous_frame,position1);
 	 int histSize[3] = {8, 8, 8};
     float range[2] = {0, 256};
     const float * ranges[3] = {range, range, range};
     int channels[3] = {0, 1, 2};
     calcHist(&for_hist, 1, channels, cv::Mat(), hist1, 3, histSize, ranges);
+	double ver1=compareHist(old_hist,hist1,CV_COMP_BHATTACHARYYA);
+	ver[i]=ver1;
 	}
-		{
-			cv::Mat for_hist(previous_frame,position2);
-	 int histSize[3] = {8, 8, 8};
-    float range[2] = {0, 256};
-    const float * ranges[3] = {range, range, range};
-    int channels[3] = {0, 1, 2};
-    calcHist(&for_hist, 1, channels, cv::Mat(), hist2, 3, histSize, ranges);
-	}
-			{
-			cv::Mat for_hist(previous_frame,position3);
-	 int histSize[3] = {8, 8, 8};
-    float range[2] = {0, 256};
-    const float * ranges[3] = {range, range, range};
-    int channels[3] = {0, 1, 2};
-    calcHist(&for_hist, 1, channels, cv::Mat(), hist3, 3, histSize, ranges);
-	}
-				{
-			cv::Mat for_hist(previous_frame,position4);
-	 int histSize[3] = {8, 8, 8};
-    float range[2] = {0, 256};
-    const float * ranges[3] = {range, range, range};
-    int channels[3] = {0, 1, 2};
-    calcHist(&for_hist, 1, channels, cv::Mat(), hist4, 3, histSize, ranges);
-	}
-	double dx;double dy;
-	double ver1;double ver2;double ver3;double ver4;
-	ver1=compareHist(hist,hist1,CV_COMP_BHATTACHARYYA);
-		ver2=compareHist(hist,hist2,CV_COMP_BHATTACHARYYA);
-			ver3=compareHist(hist,hist3,CV_COMP_BHATTACHARYYA);
-				ver4=compareHist(hist,hist4,CV_COMP_BHATTACHARYYA);
 
-	double norm;norm=ver1+ver2+ver3+ver4;
-	ver1/=norm;
-		ver2/=norm;	ver3/=norm;	ver4/=norm;
+	double norm;norm=0;for(long i=0;i<ver.size();i++){norm+=ver[i];}
+	for(long i=0;i<ver.size();i++){ver[i]/=norm;}
 
-	dx=10*ver1-10*ver2;
-	dy=10*ver3-10*ver4;
+	double dx;double dy;dx=0;dy=0;
+
+	for(long i=0;i<ver.size();i++){
+		dx+=(possible_dx[i]*ver[i]);dy+=(possible_dy[i]*ver[i]);}
 
 	position_.x+=dx;
 	position_.y+=dy;
-
     new_position = position_;
 	return true;
 }
