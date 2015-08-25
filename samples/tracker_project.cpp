@@ -71,7 +71,7 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 										 if(position1.y<tmp.y) vyx=true;
 										 if((position1.x+position1.width)>(tmp.x+tmp.width)) vyx=true;
 										 if((position1.y+position1.height)>(tmp.y+tmp.height)) vyx=true;
-										 if(vyx){ver[i]=0;continue;}
+										 if(vyx){ver[i]=-5.0;continue;}
 										 }
 										 cv::Mat for_hist(frame,position1);
 										 int histSize[3] = {8, 8, 8};
@@ -82,6 +82,12 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 										 double ver1=compareHist(old_hist,hist1,CV_COMP_CORREL);
 										 ver[i]=ver1;
 										 }
+
+	{
+	double min=1.0e40;
+	for(int i=0;i<ver.size();i++){if((ver[i]>0)&&(ver[i]<min)){min=ver[i];}}
+	for(int i=0;i<ver.size();i++) if (ver[i]<0) ver[i]=min;
+	}
 
 	double norm;
 	norm=0;
@@ -107,7 +113,7 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 	yyy+=dy;
 	position_.x=xxx;
 	position_.y=yyy;
-	std::cout<<xxx<<"  "<<yyy<<"\n";
+	//std::cout<<xxx<<"  "<<yyy<<"\n";
 
     new_position = position_;
 	previous_frame=frame;
