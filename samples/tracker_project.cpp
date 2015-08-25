@@ -61,6 +61,18 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 										 cv::Mat hist1;
 										 position1.x+=possible_dx[i];
 										 position1.y+=possible_dy[i];
+										 {
+										 //отслеживаем случай, когда прямоугольник position1 выходит за границы кадра
+										 cv::Point p1(1,1);
+										 cv::Point p2((frame.cols-2),(frame.rows-2));
+										 cv::Rect tmp(p1,p2);
+										 bool vyx=false;
+										 if(position1.x<tmp.x) vyx=true;
+										 if(position1.y<tmp.y) vyx=true;
+										 if((position1.x+position1.width)>(tmp.x+tmp.width)) vyx=true;
+										 if((position1.y+position1.height)>(tmp.y+tmp.height)) vyx=true;
+										 if(vyx){ver[i]=0;continue;}
+										 }
 										 cv::Mat for_hist(frame,position1);
 										 int histSize[3] = {8, 8, 8};
 										 float range[2] = {0, 256};
