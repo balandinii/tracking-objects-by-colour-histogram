@@ -44,7 +44,7 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 
 	for(long i=-30;i<40;i+=10)for(long j=-30;j<40;j+=10){
 														if((i==0)&&(j==0)) continue;
-														possible_dx.push_back(i/2);possible_dy.push_back(j/2);
+														possible_dx.push_back(i);possible_dy.push_back(j);
 														}
 
 //	std::cout<<possible_dx.size()<<"  "<<possible_dy.size()<<"  ";
@@ -107,7 +107,7 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 
 	//double dl=sqrt(dx*dx+dy*dy);
 	//if(dl>0.001){dx/=dl;dy/=dl;}
-	dx*=17.0;dy*=17.0;dx*=2.0;dy*=2.0;
+	dx*=17.0;dy*=17.0;
 
 	xxx+=dx;
 	yyy+=dy;

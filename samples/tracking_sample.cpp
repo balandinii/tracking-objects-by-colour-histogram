@@ -119,7 +119,7 @@ int main( int argc, const char** argv )
                               gt))
             break;
 		if(sh>1000) break;
-		sh++;std::cout<<sh<<std::endl;
+		sh++;//std::cout<<sh<<std::endl;
     }
 
     if (gt_reader.isOpen())
