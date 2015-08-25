@@ -107,7 +107,7 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 
 	//double dl=sqrt(dx*dx+dy*dy);
 	//if(dl>0.001){dx/=dl;dy/=dl;}
-	dx*=17.0;dy*=17.0;
+	dx*=17.0;dy*=17.0;dx*=3.0;dy*=3.0;
 
 	xxx+=dx;
 	yyy+=dy;
