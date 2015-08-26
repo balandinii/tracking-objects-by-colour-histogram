@@ -70,7 +70,8 @@ public:
             cv::rectangle(display_image_, gt, cv::Scalar( 255, 0, 0 ), 2, 1);
         cv::rectangle(display_image_, rect, rect_color, 2, 1);
         cv::imshow(window_name_, display_image_);
-        char c = cv::waitKey(30) & 0xFF;
+        //char c = cv::waitKey() & 0xFF;
+		char c = cv::waitKey();
         if (c == 27) // ESC
             return false;
 

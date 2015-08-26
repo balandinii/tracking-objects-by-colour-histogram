@@ -63,7 +63,7 @@ int main( int argc, const char** argv )
 
     // Get the first frame
     cv::Mat frame;
-    cap >> frame;cap >> frame;cap >> frame;cap >> frame;cap >> frame;
+    cap >> frame;cap >> frame;
     
     // Initialize GTReader and PrecisionRecallEvaluator
     std::string argv3 = parser.get<std::string>("3");
@@ -118,7 +118,7 @@ int main( int argc, const char** argv )
                               rect_color,
                               gt))
             break;
-		if(sh>1000) break;
+		//if(sh>1000) break;
 		sh++;//std::cout<<sh<<std::endl;
     }
 
