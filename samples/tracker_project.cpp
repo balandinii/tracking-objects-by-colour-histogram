@@ -19,24 +19,28 @@ class Trackerproject : public Tracker
 
 cv::Mat previous_frame;
 
+cv::Mat old_hist;
+
 bool Trackerproject::init( const cv::Mat& frame, const cv::Rect& initial_position )
 {
     position_ = initial_position;
 	previous_frame=frame;
 	xxx=position_.x;
 	yyy=position_.y;
-	return true;
-}
 
-bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
-{
 	cv::Mat for_hist(previous_frame,position_);
 	int histSize[3] = {32, 32, 32};
     float range[2] = {0, 256};
     const float * ranges[3] = {range, range, range};
     int channels[3] = {0, 1, 2};
-    cv::Mat old_hist;
     calcHist(&for_hist, 1, channels, cv::Mat(), old_hist, 3, histSize, ranges);
+
+	return true;
+}
+
+bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
+{
+	
 	if (old_hist.empty())
 	{
 		std::cout << "Empty histogram!" << std:: endl;
@@ -79,7 +83,11 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 										 
 										 if(vyx){ver[i]=-5.0;continue;}
 										 }
-										 cv::Mat for_hist(frame,position1);										 
+										 cv::Mat for_hist(frame,position1);		
+										 	int histSize[3] = {32, 32, 32};
+    float range[2] = {0, 256};
+    const float * ranges[3] = {range, range, range};
+    int channels[3] = {0, 1, 2};
 										 calcHist(&for_hist, 1, channels, cv::Mat(), hist1, 3, histSize, ranges);
 										 //std::cout<<hist1;
 										 double ver1=compareHist(old_hist,hist1,CV_COMP_CORREL);
@@ -108,32 +116,45 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 								//std::cout<<ver[i]<<"\n";
 								}
 
-	//double dl=sqrt(dx*dx+dy*dy);
-	////std::cout<<dl<<"\n";
-	//if(dl>0.000001){dx/=dl;dy/=dl;
-	//				double maxver=0;
-	//				long t=1;
-	//				for(;;){
-	//						 cv::Rect position1;position1=position_;
-	//									 cv::Mat hist1;
-	//									 position1.x+=(dx*double(t));
-	//									 position1.y+=(dy*double(t));
-	//									 cv::Mat for_hist(frame,position1);
-	//									 int histSize[3] = {8, 8, 8};
-	//									 float range[2] = {0, 256};
-	//									 const float * ranges[3] = {range, range, range};
-	//									 int channels[3] = {0, 1, 2};
-	//									 calcHist(&for_hist, 1, channels, cv::Mat(), hist1, 3, histSize, ranges);
-	//									 double ver1=compareHist(old_hist,hist1,CV_COMP_CORREL);
-	//									 if((ver1*sqrt(sqrt(sqrt(double(t)))))>(maxver*sqrt(sqrt(sqrt(double(t-1)))))){maxver=ver1;}else{break;}
-	//									 t++;
-	//									 //if(t>100){break;}
-	//									 //std::cout<<ver1<<"   ";
-	//				        }
-	//				dx*=t;dy*=t;
-	//				std::cout<<t<<"  "<<maxver<<"\n";
-	//				}
-	dx*=10.0;dy*=10.0;
+	double dl=sqrt(dx*dx+dy*dy);
+	//std::cout<<dl<<"\n";
+	if(dl>0.000001){dx/=dl;dy/=dl;
+					double maxver=0;
+					long t;
+					long tt=1;
+					for(t=1;t<100;t++){
+							 cv::Rect position1;position1=position_;
+										 cv::Mat hist1;
+										 position1.x+=(dx*double(t));
+										 position1.y+=(dy*double(t));
+										 {
+										 //отслеживаем случай, когда прямоугольник position1 выходит за границы кадра
+										 cv::Point p1(0,0);
+										 cv::Point p2((frame.cols-1),(frame.rows-1));
+										 cv::Rect tmp(p1,p2);
+										 bool vyx=false;
+										 if(position1.x<tmp.x || position1.y<tmp.y) vyx=true;
+										 if((position1.x+position1.width)>(tmp.x+tmp.width) ||
+											(position1.y+position1.height)>(tmp.y+tmp.height)) vyx=true;
+										 
+										 if(vyx){continue;}
+										 }
+										 cv::Mat for_hist(frame,position1);
+										 int histSize[3] = {32, 32, 32};
+										 float range[2] = {0, 256};
+										 const float * ranges[3] = {range, range, range};
+										 int channels[3] = {0, 1, 2};
+										 calcHist(&for_hist, 1, channels, cv::Mat(), hist1, 3, histSize, ranges);
+										 double ver1=compareHist(old_hist,hist1,CV_COMP_CORREL);
+										 if((ver1)>(maxver)){maxver=ver1;tt=t;}
+										 //t++;
+										 //if(t>100){break;}
+										 //std::cout<<t<<"   ";
+					        }
+					dx*=tt;dy*=tt;
+					std::cout<<tt<<"  "<<maxver<<"\n";
+					}
+	//dx*=10.0;dy*=10.0;
 	xxx+=dx;
 	yyy+=dy;
 	position_.x=xxx;
