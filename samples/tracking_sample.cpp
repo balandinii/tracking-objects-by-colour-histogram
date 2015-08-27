@@ -118,7 +118,7 @@ int main( int argc, const char** argv )
                               rect_color,
                               gt))
             break;
-		if(sh>1000) break;
+		//if(sh>1000) break;
 		sh++;//std::cout<<sh<<std::endl;
     }
 

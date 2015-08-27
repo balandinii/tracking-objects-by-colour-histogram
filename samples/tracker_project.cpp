@@ -147,6 +147,7 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 										 calcHist(&for_hist, 1, channels, cv::Mat(), hist1, 3, histSize, ranges);
 										 double ver1=compareHist(old_hist,hist1,CV_COMP_CORREL);
 										 if((ver1)>(maxver)){maxver=ver1;tt=t;}
+										 else{break;}
 										 //t++;
 										 //if(t>100){break;}
 										 //std::cout<<t<<"   ";
