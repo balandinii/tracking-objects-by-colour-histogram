@@ -55,41 +55,30 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 														if((i==0)&&(j==0)) continue;
 														possible_dx.push_back(i);possible_dy.push_back(j);
 														}
-
-//	std::cout<<possible_dx.size()<<"  "<<possible_dy.size()<<"  ";
-	
-	//for(long i=0;i<possible_dx.size();i++) ver.push_back(0);
 	ver.resize(possible_dx.size());
 
-	//std::cout<<ver.size()<<"\n";
-
-//	for(long i=0;i<possible_dx.size();i++){
-		//std::cout<<possible_dx[i]<<"  "<<possible_dy[i]<<"\n";}
-
 	for(long i=0;i<possible_dx.size();i++){
-										 cv::Rect position1(position_);
-										 cv::Mat hist1;
-										 position1.x+=possible_dx[i];
-										 position1.y+=possible_dy[i];
-										 {
-										 //отслеживаем случай, когда прямоугольник position1 выходит за границы кадра
-										 cv::Point p1(0,0);
-										 cv::Point p2((frame.cols-1),(frame.rows-1));
-										 cv::Rect tmp(p1,p2);
-										 bool vyx=false;
-										 if(position1.x<tmp.x || position1.y<tmp.y) vyx=true;
-										 if((position1.x+position1.width)>(tmp.x+tmp.width) ||
-											(position1.y+position1.height)>(tmp.y+tmp.height)) vyx=true;
-										 
-										 if(vyx){ver[i]=-5.0;continue;}
-										 }
-										 cv::Mat for_hist(frame,position1);		
-										 	int histSize[3] = {32, 32, 32};
-    float range[2] = {0, 256};
-    const float * ranges[3] = {range, range, range};
-    int channels[3] = {0, 1, 2};
+										  cv::Rect position1(position_);
+										  cv::Mat hist1;
+										  position1.x+=possible_dx[i];
+										  position1.y+=possible_dy[i];
+										  {
+										  //отслеживаем случай, когда прямоугольник position1 выходит за границы кадра
+										  cv::Point p1(0,0);
+										  cv::Point p2((frame.cols-1),(frame.rows-1));
+										  cv::Rect tmp(p1,p2);
+										  bool vyx=false;
+										  if( (position1.x<tmp.x) || (position1.y<tmp.y) ) vyx=true;
+										  if((position1.x+position1.width)>(tmp.x+tmp.width)) vyx=true;
+										  if((position1.y+position1.height)>(tmp.y+tmp.height)) vyx=true;
+										  if(vyx){ver[i]=-5.0;continue;}
+										  }
+										  cv::Mat for_hist(frame,position1);		
+										  int histSize[3] = {32, 32, 32};
+                                          float range[2] = {0, 256};
+											 const float * ranges[3] = {range, range, range};
+											  int channels[3] = {0, 1, 2};
 										 calcHist(&for_hist, 1, channels, cv::Mat(), hist1, 3, histSize, ranges);
-										 //std::cout<<hist1;
 										 double ver1=compareHist(old_hist,hist1,CV_COMP_CORREL);
 										 ver[i]=ver1;
 										 }
@@ -100,30 +89,25 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 	for(int i=0;i<ver.size();i++) if (ver[i]<0) ver[i]=min;
 	}
 
-	double norm;
-	norm=0;
+	double norm=0;
 	for(long i=0;i<ver.size();i++){norm+=ver[i];}
 	for(long i=0;i<ver.size();i++){ver[i]/=norm;}
 
-	double dx;double dy;dx=0;dy=0;
-
-		//for(long i=0;i<possible_dx.size();i++){
-		//std::cout<<possible_dx[i]<<"  "<<possible_dy[i]<<"\n";}
+	double dx=0;
+	double dy=0;
 
 	for(long i=0;i<ver.size();i++){
-								dx+=(possible_dx[i]*ver[i]);
-								dy+=(possible_dy[i]*ver[i]);
-								//std::cout<<ver[i]<<"\n";
-								}
+								  dx+=(possible_dx[i]*ver[i]);
+								  dy+=(possible_dy[i]*ver[i]);
+								  }
 
 	double dl=sqrt(dx*dx+dy*dy);
-	//std::cout<<dl<<"\n";
-	if(dl>0.000001){dx/=dl;dy/=dl;
+	if(dl>0.000001){
+				   dx/=dl;dy/=dl;
 					double maxver=0;
-					long t;
 					long tt=1;
-					for(t=1;t<100;t++){
-							 cv::Rect position1;position1=position_;
+					for(long t=1;t<100;t++){
+							             cv::Rect position1;position1=position_;
 										 cv::Mat hist1;
 										 position1.x+=(dx*double(t));
 										 position1.y+=(dy*double(t));
@@ -133,10 +117,9 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 										 cv::Point p2((frame.cols-1),(frame.rows-1));
 										 cv::Rect tmp(p1,p2);
 										 bool vyx=false;
-										 if(position1.x<tmp.x || position1.y<tmp.y) vyx=true;
-										 if((position1.x+position1.width)>(tmp.x+tmp.width) ||
-											(position1.y+position1.height)>(tmp.y+tmp.height)) vyx=true;
-										 
+										 if( (position1.x<tmp.x) || (position1.y<tmp.y) ) vyx=true;
+										 if((position1.x+position1.width)>(tmp.x+tmp.width)) vyx=true;
+										 if((position1.y+position1.height)>(tmp.y+tmp.height)) vyx=true;
 										 if(vyx){continue;}
 										 }
 										 cv::Mat for_hist(frame,position1);
@@ -148,19 +131,14 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 										 double ver1=compareHist(old_hist,hist1,CV_COMP_CORREL);
 										 if((ver1)>(maxver)){maxver=ver1;tt=t;}
 										 else{break;}
-										 //t++;
-										 //if(t>100){break;}
-										 //std::cout<<t<<"   ";
 					        }
 					dx*=tt;dy*=tt;
-					//std::cout<<tt<<"  "<<maxver<<"\n";
 					}
-	//dx*=10.0;dy*=10.0;
+
 	xxx+=dx;
 	yyy+=dy;
 	position_.x=xxx;
 	position_.y=yyy;
-	//std::cout<<xxx<<"  "<<yyy<<"\n";
 
     new_position = position_;
 	previous_frame=frame;
