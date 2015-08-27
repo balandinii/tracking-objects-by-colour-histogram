@@ -153,7 +153,7 @@ bool Trackerproject::track( const cv::Mat& frame, cv::Rect& new_position )
 										 //std::cout<<t<<"   ";
 					        }
 					dx*=tt;dy*=tt;
-					std::cout<<tt<<"  "<<maxver<<"\n";
+					//std::cout<<tt<<"  "<<maxver<<"\n";
 					}
 	//dx*=10.0;dy*=10.0;
 	xxx+=dx;

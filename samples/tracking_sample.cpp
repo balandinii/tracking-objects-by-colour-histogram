@@ -91,6 +91,11 @@ int main( int argc, const char** argv )
 
 
 	long sh=0;
+
+	//cv::VideoWriter captur;
+	//captur.open("kol.avi",,1.0/24.0,static_cast<cv::Size>(frame.size()));
+	//if(!captur.isOpened()) std::cout<<"not opened";
+
     // Run tracking
     while (true)
     {
@@ -120,6 +125,7 @@ int main( int argc, const char** argv )
             break;
 		//if(sh>1000) break;
 		sh++;//std::cout<<sh<<std::endl;
+		//captur<<frame;
     }
 
     if (gt_reader.isOpen())
