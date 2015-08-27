@@ -92,9 +92,9 @@ int main( int argc, const char** argv )
 
     long sh=0;
     
-    //cv::VideoWriter captur;
-    //captur.open("kol.avi",,1.0/24.0,static_cast<cv::Size>(frame.size()));
-    //if(!captur.isOpened()) std::cout<<"not opened";
+    cv::VideoWriter captur;
+    captur.open("kol.avi",8,1.0/24.0,static_cast<cv::Size>(frame.size()));
+    if(!captur.isOpened()) std::cout<<"not opened";
 
     // Run tracking
     while (true)
@@ -123,9 +123,39 @@ int main( int argc, const char** argv )
                               rect_color,
                               gt))
             break;
+
+		{
+			for(long x=position.x;x<=(position.x+position.width);x++){
+				for(long i=0;i<3;i++){frame.ptr(position.y+i,x)[0]=0;frame.ptr(position.y+i,x)[1]=255;frame.ptr(position.y+i,x)[2]=0;}
+}
+						for(long x=position.x;x<=(position.x+position.width);x++){
+			for(long i=-2;i<1;i++){frame.ptr(position.y+i+position.height,x)[0]=0;frame.ptr(position.y+i+position.height,x)[1]=255;frame.ptr(position.y+i+position.height,x)[2]=0;}}
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+							for(long y=position.y;y<=(position.y+position.height);y++){
+				for(long i=0;i<3;i++){frame.ptr(y,position.x+i)[0]=0;frame.ptr(y,position.x+i)[1]=255;frame.ptr(y,position.x+i)[2]=0;}
+}
+						for(long y=position.y;y<=(position.y+position.height);y++){
+							for(long i=-2;i<1;i++){frame.ptr(y,position.x+i+position.width)[0]=0;frame.ptr(y,position.x+i+position.width)[1]=255;frame.ptr(y,position.x+i+position.width)[2]=0;}}
+		
+		}
         //if(sh>1000) break;
         sh++;
-        //captur<<frame;
+        captur<<frame;
     }
 
     if (gt_reader.isOpen())
